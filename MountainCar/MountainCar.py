@@ -62,7 +62,7 @@ env = gym.make('MountainCar-v0')
 # in how many sections the observation states will be sectionnned
 states_n = 100
 
-learn = False
+learn = True
 
 q = 0
 if learn:
@@ -87,7 +87,8 @@ for episode in range(10000000):
     while True:
         if episode % 1000 == 0 or not learn :
             env.render()
-        if learn:
+
+        '''if learn:
             # best valued action for a specific position and a velocity
             if random.uniform(0, 1) < epsilon:
                 action = env.action_space.sample()
@@ -104,10 +105,10 @@ for episode in range(10000000):
                     action = env.action_space.sample()
                     epsilon *= epsilon_decay
         else:
-            action = int(np.argmax(q[posToQ(state[0])][velToQ(state[1])]))
+            action = int(np.argmax(q[posToQ(state[0])][velToQ(state[1])]))'''
 
 
-        '''noise = np.random.randn(1, 3) * (1. / (episode+1)) ** 0.75
+        noise = np.random.randn(1, 3) * (1. / (episode+1)) ** 0.75
         action = 0
 
         input = True
@@ -118,7 +119,7 @@ for episode in range(10000000):
         if not input:
             action = random.randint(0, 2)
         else:
-            action = np.argmax(q[posToQ(state[0]), velToQ(state[1]), :]+noise)'''
+            action = np.argmax(q[posToQ(state[0]), velToQ(state[1]), :]+noise)
 
         # take a step
         next_state, reward, done, info = env.step(action)
@@ -126,7 +127,7 @@ for episode in range(10000000):
         if learn:
             next_max = np.max(q[posToQ(next_state[0]), velToQ(next_state[1]), :])
 
-            reward = posToQ(next_state[0]) / 40.0
+            #reward = posToQ(next_state[0]) / 40.0
             # reward = abs(next_state[1])/0.07
             #if next_state[0] > 0.55:
             #    reward = 10
@@ -138,9 +139,9 @@ for episode in range(10000000):
             q[posToQ(next_state[0])][velToQ(next_state[1])][action] = next_value
             state = next_state
 
-        #if done:
-        #    np.save('trained_Q_DONE', q)
-        #    break
+        if done:
+            np.save('trained_Q_DONE', q)
+            break
     if (episode+1) % 100 == 0:
         print("stage {}".format(episode+1))
     if episode % 1000 == 0 and learn:
